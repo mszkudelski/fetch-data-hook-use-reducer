@@ -45,7 +45,7 @@ export const useFetchData = <T>(
   callback: () => Promise<T>,
   deps: unknown[] = []
 ) => {
-  const [state, dispatch] = useReducer<Reducer<T, Action>>(
+  const [state, dispatch] = useReducer<Reducer<FetchDataResult<T>, Action<T>>, FetchDataLoading>(
     reducer,
     undefined,
     init
