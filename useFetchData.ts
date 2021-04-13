@@ -30,7 +30,7 @@ const reducer: Reducer<FetchDataResult<unknown>, Action<unknown>> = <
         status: "error",
         data: null,
         error:
-          payload instanceof Error ? payload : new Error(payload.toString())
+          payload instanceof Error ? payload : new Error((payload || {}).toString())
       };
     case ActionTypes.Loading:
       return init();
