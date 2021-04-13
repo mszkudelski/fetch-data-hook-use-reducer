@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useFetchData } from "./useFetchData";
 
 export default () => {
-  const [name, setName] = useState<string>("");
+  const [name, setName] = useState("");
 
   const { status, data } = useFetchData(
     () => new Promise<string>(r => setTimeout(() => r(name), 2000)),
