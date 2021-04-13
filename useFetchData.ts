@@ -16,10 +16,10 @@ interface Action<T> {
   payload?: T;
 }
 
-const reducer = <T>(
+function reducer<T>(
   state: FetchDataResult<T>,
   { type, payload }: Action<T>
-): FetchDataResult<T> => {
+): FetchDataResult<T> {
   switch (type) {
     case ActionTypes.Success:
       return { status: "success", data: payload, error: null };
@@ -39,13 +39,17 @@ const reducer = <T>(
         "useFetchData hook: incorrect action type passed: " + type
       );
   }
-};
+}
 
 export const useFetchData = <T>(
   callback: () => Promise<T>,
   deps: unknown[] = []
 ) => {
-  const [state, dispatch] = useReducer(reducer, undefined, init);
+  const [state, dispatch] = useReducer<Reducer<T, Action>>(
+    reducer,
+    undefined,
+    init
+  );
 
   useEffect(() => {
     dispatch({ type: ActionTypes.Loading });
