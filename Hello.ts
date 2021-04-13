@@ -4,7 +4,7 @@ import { useFetchData } from "./useFetchData";
 export default () => {
   const [name, setName] = useState("");
 
-  const { status } = useFetchData(() => new Promise(r => setTimeout(r, 2000)), [
+  const { status, data } = useFetchData(() => new Promise(r => setTimeout(() => r(name), 2000)), [
     name
   ]);
   const { status: error } = useFetchData(
