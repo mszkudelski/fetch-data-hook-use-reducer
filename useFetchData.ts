@@ -1,26 +1,58 @@
-import { useEffect, useState } from "react";
-import { FetchDataResult } from "./fetch-data-results";
+import { Reducer, useEffect, useReducer, useState } from "react";
+import { FetchDataLoading, FetchDataResult } from "./fetch-data-results";
+
+function init(): FetchDataLoading {
+  return { status: "loading", data: null, error: null };
+}
+
+enum ActionTypes {
+  Success = "success",
+  Error = "error",
+  Loading = "loading"
+}
+
+interface Action<T> {
+  type: ActionTypes;
+  payload?: T;
+}
+
+const reducer: Reducer<FetchDataResult<unknown>, Action<unknown>> = <
+  T extends {} | Error
+>(
+  state: unknown,
+  { type, payload }: Action<T>
+): FetchDataResult<T> => {
+  switch (type) {
+    case ActionTypes.Success:
+      return { status: "success", data: payload, error: null };
+    case ActionTypes.Error:
+      return {
+        status: "error",
+        data: null,
+        error:
+          payload instanceof Error ? payload : new Error(payload.toString())
+      };
+    case ActionTypes.Loading:
+      return init();
+    default:
+      throw new Error(
+        "useFetchData hook: incorrect action type passed: " + type
+      );
+  }
+};
 
 export const useFetchData = <T>(
   callback: () => Promise<T>,
   deps: unknown[] = []
-): FetchDataResult<T> => {
-  const [state, setState] = useState<FetchDataResult<T>>({
-    data: null,
-    error: null,
-    status: "loading"
-  });
+) => {
+  const [state, dispatch] = useReducer(reducer, undefined, init);
 
   useEffect(() => {
-    setState({
-      data: null,
-      error: null,
-      status: "loading"
-    });
+    dispatch({ type: ActionTypes.Loading });
 
     callback()
-      .then(data => setState({ data, error: null, status: "success" }))
-      .catch(error => setState({ data: null, error, status: "error" }));
+      .then(data => dispatch({ payload: data, type: ActionTypes.Success }))
+      .catch(error => dispatch({ payload: error, type: ActionTypes.Error }));
   }, [...deps]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return state;
