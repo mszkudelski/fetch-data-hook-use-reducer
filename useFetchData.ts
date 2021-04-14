@@ -45,11 +45,10 @@ export const useFetchData = <T>(
   callback: () => Promise<T>,
   deps: unknown[] = []
 ) => {
-  const [state, dispatch] = useReducer<Reducer<FetchDataResult<T>, Action<T>>, FetchDataLoading>(
-    reducer,
-    undefined,
-    init
-  );
+  const [state, dispatch] = useReducer<
+    Reducer<FetchDataResult<T>, Action<T>>,
+    FetchDataLoading
+  >(reducer, undefined, init);
 
   useEffect(() => {
     dispatch({ type: ActionTypes.Loading });
